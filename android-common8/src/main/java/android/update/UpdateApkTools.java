@@ -17,7 +17,7 @@ public class UpdateApkTools {
      * SD卡目录 下载
      */
     public static String strDownloadDir = Environment.getExternalStorageDirectory() + "/.cache/.apk/";
-    public final static String fileName = "saas_pos_zhuizhi_apk";
+    public final static String fileName = "download_apk";
     /**
      * 没有新的版本
      */

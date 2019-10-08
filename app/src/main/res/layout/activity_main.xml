@@ -31,4 +31,24 @@
         android:layout_height="60dp"
         android:layout_marginTop="60dp"
         android:textSize="18dp" />
+
+    <EditText
+        android:id="@+id/edit_ip2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="80dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:text="10.208.24.208:8080"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18dp" />
+
+    <Button
+        android:id="@+id/btn_down2"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:text="从配置下载"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18dp" />
 </LinearLayout>
