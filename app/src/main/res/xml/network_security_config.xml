@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config>
+        <domain includeSubdomains="true">qdama-pos-stage.zhuizhikeji.com</domain>
+        <domain includeSubdomains="true">pos-stage.zhuizhikeji.com</domain>
+        <domain includeSubdomains="true">qdama-pos-qa.zhuizhikeji.com</domain>
+        <domain includeSubdomains="true">pos-qa.zhuizhikeji.com</domain>
+        <domain includeSubdomains="true">pos-qa-qdama.zhuizhikeji.com</domain>
+        <domain includeSubdomains="true">qdama-pos.zhuizhikeji.com</domain>
+        <domain includeSubdomains="true">pos.zhuizhikeji.com</domain>
+        <domain includeSubdomains="true">pos.qdama.cn</domain>
+        <trust-anchors>
+            <certificates src="@raw/xuchongying" />
+            <certificates src="@raw/huijie" />
+            <certificates src="@raw/wg" />
+            <certificates src="@raw/li" />
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>
