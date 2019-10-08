@@ -83,13 +83,16 @@ public class AppConfigDownloadManager {
             }
             File downloadFile = new File(strDownloadDir + strDownloadFileName);
             if (downloadFile.exists()) {// 存在下载文件
-                if (newVersion.compareToIgnoreCase(AppConfigModel.getInstance().getString(fileUrl, defaultVersion)) > 0
-                        && AppConfigModel.getInstance().getString(fileUrl, defaultVersion).compareToIgnoreCase(replaceMinVersion) >= 0) {
-                    // 配置新版本比本地版本大 同时 允许替换的版本比本地版本大
+                if (!"0.0000000".equals(AppConfigModel.getInstance().getString(fileUrl, "0.0000000"))) {
+                    //该链接下载过
+                    if (newVersion.compareToIgnoreCase(AppConfigModel.getInstance().getString(fileUrl, defaultVersion)) > 0
+                            && AppConfigModel.getInstance().getString(fileUrl, defaultVersion).compareToIgnoreCase(replaceMinVersion) >= 0) {
+                        // 配置新版本比本地版本大 同时 允许替换的版本比本地版本大
 
-                } else {
-                    ShowLog.i(TAG, fileUrl + ":不下载替换");
-                    return;
+                    } else {
+                        ShowLog.i(TAG, fileUrl + ":不下载替换");
+                        return;
+                    }
                 }
             }
             DownLoadFileManager.getInstance().downLoad(activity, new HandlerListener() {
