@@ -34,16 +34,16 @@ import com.atar.downloadapp.R;
 import java.io.File;
 
 
-public class MainActivity extends AppCompatActivity implements DownloadProgressButton.OnDownLoadClickListener, HandlerListener, View.OnClickListener, NetWorkCallListener {
+public class MainActivity extends AppCompatActivity implements DownloadProgressButton.OnDownLoadClickListener, HandlerListener, NetWorkCallListener {
 
     private String TAG = MainActivity.class.getSimpleName();
 
     private final int INSTALL_PACKAGES_REQUESTCODE = 12334;
 
     private EditText edt_ip;
-    private EditText edt_thread_num;
+    private EditText edt_thread_num, edt_thread_num2;
     private EditText edit_ip2;
-    private DownloadProgressButton btn_down;
+    private DownloadProgressButton btn_down, btn_down1;
 
     //获取配置标识
     private final int what = 100023;
@@ -56,8 +56,10 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
 
         edt_ip = findViewById(R.id.edt_ip);
         edt_thread_num = findViewById(R.id.edt_thread_num);
+        edt_thread_num2 = findViewById(R.id.edt_thread_num2);
         edit_ip2 = findViewById(R.id.edit_ip2);
         btn_down = findViewById(R.id.btn_down);
+        btn_down1 = findViewById(R.id.btn_down1);
 
         btn_down.setOnDownLoadClickListener(this);
         btn_down.setButtonRadius(0);
@@ -68,17 +70,19 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
         btn_down.setBackgroundSecondColor(getResources().getColor(R.color.color_ffffffff));
         btn_down.setCurrentText("下载");
 
-        findViewById(R.id.btn_down2).setOnClickListener(this);
+        btn_down1.setOnDownLoadClickListener(this);
+        btn_down1.setButtonRadius(0);
+        btn_down1.setEnablePause(true);
+        btn_down1.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btn_down1.setTextColor(getResources().getColor(R.color.color_black));
+        btn_down1.setTextCoverColor(getResources().getColor(R.color.color_ffffffff));
+        btn_down1.setBackgroundSecondColor(getResources().getColor(R.color.color_ffffffff));
+        btn_down1.setCurrentText("下载");
+
     }
 
     @Override
     public void clickDownload(View v) {
-        String fileUrl = edt_ip.getText().toString();
-        fileUrl = "http://" + fileUrl;
-        if (TextUtils.isEmpty(fileUrl)) {
-            CommonToast.show("下载地址为空");
-            return;
-        }
         int threadNum = 1;
         String strthreadNum = edt_thread_num.getText().toString();
         if (!TextUtils.isEmpty(strthreadNum)) {
@@ -88,23 +92,49 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
                 e.printStackTrace();
             }
         }
-
-        DownLoadFileManager.getInstance().downLoad(this, this, 98999, fileUrl, threadNum, true, MDPassword.getPassword32(UpdateApkTools.fileName), UpdateApkTools.strDownloadDir);
+        String fileUrl = "";
+        switch (v.getId()) {
+            case R.id.btn_down:
+                fileUrl = edt_ip.getText().toString();
+                fileUrl = "http://" + fileUrl;
+                if (TextUtils.isEmpty(fileUrl)) {
+                    CommonToast.show("下载地址为空");
+                    return;
+                }
+                DownLoadFileManager.getInstance().downLoad(this, this, 1, fileUrl, threadNum, true, UpdateApkTools.fileName, UpdateApkTools.strDownloadDir);
+                break;
+            case R.id.btn_down1:
+                fileUrl = edit_ip2.getText().toString();
+                if (TextUtils.isEmpty(fileUrl)) {
+                    CommonToast.show("下载地址为空");
+                    return;
+                }
+                fileUrl = "http://" + fileUrl + "/assets/config/android_config_moudle.txt";
+                AppConfigDownloadManager.getInstance().getServerJson(fileUrl, what, ErrorMsgEnum.NetWorkMsgWhithToast, this, this);
+                return;
+        }
     }
 
     @Override
     public void clickPause(View v) {
-
+        switch (v.getId()) {
+            case R.id.btn_down:
+                DownLoadFileManager.getInstance().pauseDownload(1);
+                break;
+            case R.id.btn_down1:
+                DownLoadFileManager.getInstance().pauseDownload(2);
+                break;
+        }
     }
 
     @Override
     public void clickResume(View v) {
-
+        clickDownload(v);
     }
 
     @Override
     public void clickFinish(View v) {
-
+        clickDownload(v);
     }
 
     @Override
@@ -114,11 +144,21 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
                 ShowLog.i(TAG, msg.arg2 + ":下载失败");
                 break;
             case DownLoadFileBean.DOWLOAD_FLAG_SUCCESS:
-                btn_down.setProgress(100);
-                btn_down.finish();
-                btn_down.setCurrentText("正在安装...");
-
-                final File downloadFile = new File(UpdateApkTools.strDownloadDir + MDPassword.getPassword32(UpdateApkTools.fileName));
+                File downloadFile = null;
+                switch (msg.arg2) {
+                    case 1:
+                        btn_down.setProgress(100);
+                        btn_down.finish();
+                        btn_down.setCurrentText("正在安装...");
+                        downloadFile = new File(UpdateApkTools.strDownloadDir + UpdateApkTools.fileName);
+                        break;
+                    case 2:
+                        btn_down1.setProgress(100);
+                        btn_down1.finish();
+                        btn_down1.setCurrentText("正在安装...");
+                        downloadFile = new File(UpdateApkTools.strDownloadDir + MDPassword.getPassword32(UpdateApkTools.fileName));
+                        break;
+                }
                 if (downloadFile != null && downloadFile.exists()) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         boolean b = getPackageManager().canRequestPackageInstalls();
@@ -136,8 +176,16 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
                 break;
             case DownLoadFileBean.DOWLOAD_FLAG_ING:
                 int progress = (Integer) msg.obj;
-                btn_down.setProgress(progress);
-                btn_down.setVisibility(View.VISIBLE);
+                switch (msg.arg2) {
+                    case 1:
+                        btn_down.setProgress(progress);
+                        btn_down.setVisibility(View.VISIBLE);
+                        break;
+                    case 2:
+                        btn_down1.setProgress(progress);
+                        btn_down1.setVisibility(View.VISIBLE);
+                        break;
+                }
                 break;
             case UpdateApkTools.UPDATA_IS_NEW_VERSION:
                 if (msg.obj != null) {
@@ -145,11 +193,10 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
                     if (updateApkInfo != null) {
                         String fileUrl = updateApkInfo.getUrl();
                         String newVersion = updateApkInfo.getVersion();
-                        int which = 0;
+                        int which = 2;
                         if (!TextUtils.isEmpty(fileUrl)) {
-                            which = fileUrl.hashCode();
                             int threadNum = 1;
-                            String strthreadNum = edt_thread_num.getText().toString();
+                            String strthreadNum = edt_thread_num2.getText().toString();
                             if (!TextUtils.isEmpty(strthreadNum)) {
                                 try {
                                     threadNum = Integer.valueOf(strthreadNum);
@@ -180,17 +227,6 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
         PackageUtil.install(this, downloadFile, "com.atar.downloadapp.fileprovider", 0);
     }
 
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_down2:
-                String fileUrl = edit_ip2.getText().toString();
-                fileUrl = "http://" + fileUrl + "/assets/config/android_config_moudle.txt";
-                AppConfigDownloadManager.getInstance().getServerJson(fileUrl, what, ErrorMsgEnum.NetWorkMsgWhithToast, this, this);
-                break;
-        }
-    }
 
     @Override
     public void NetWorkCall(NetWorkMsg msg) {

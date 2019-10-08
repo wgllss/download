@@ -13,6 +13,7 @@ import java.net.URL;
 import android.app.Activity;
 import android.appconfig.moudle.ConfigJson;
 import android.application.CrashHandler;
+import android.download.DownLoadFileBean;
 import android.download.DownLoadFileManager;
 import android.http.HttpReadServerConnection;
 import android.http.HttpRequest;
@@ -90,6 +91,12 @@ public class AppConfigDownloadManager {
                         // 配置新版本比本地版本大 同时 允许替换的版本比本地版本大
 
                     } else {
+                        if (handlerListener != null) {
+                            Message msg = new Message();
+                            msg.what = DownLoadFileBean.DOWLOAD_FLAG_SUCCESS;
+                            msg.arg2 = which;
+                            handlerListener.onHandlerData(msg);
+                        }
                         ShowLog.i(TAG, fileUrl + ":不下载替换");
                         return;
                     }
