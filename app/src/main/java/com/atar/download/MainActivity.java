@@ -96,10 +96,12 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
         switch (v.getId()) {
             case R.id.btn_down:
                 fileUrl = edt_ip.getText().toString();
-                fileUrl = "http://" + fileUrl;
                 if (TextUtils.isEmpty(fileUrl)) {
                     CommonToast.show("下载地址为空");
                     return;
+                }
+                if (!fileUrl.contains("http")) {
+                    fileUrl = "http://" + fileUrl;
                 }
                 DownLoadFileManager.getInstance().downLoad(this, this, 1, fileUrl, threadNum, true, UpdateApkTools.fileName, UpdateApkTools.strDownloadDir);
                 break;
