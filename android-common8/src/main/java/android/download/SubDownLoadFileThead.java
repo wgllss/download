@@ -31,8 +31,8 @@ public class SubDownLoadFileThead extends Thread {
     private RandomAccessFile file = null;// 存放的文件
     private RandomAccessFile tempFile = null;// 指针文件
     private DownLoadFileBean downLoadFileBean;
-    private int timeout = 10000;// 超时时间
-    private int reTryNum = 3;// 超时重试次数
+    private int timeout = 30000;// 超时时间
+    private int reTryNum = 5;// 超时重试次数
     private int curNum;// 当前重试次数
     private boolean isOK = false;// 下载完成
     private String mis = "";// 提示信息
