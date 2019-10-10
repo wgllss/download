@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.interfaces.HandlerListener;
@@ -64,7 +66,7 @@ public class DownLoadFileBean {
     /**
      * 下载回调HandlerListener
      */
-    private HandlerListener handlerListener;
+    private Map<String, HandlerListener> HandlerListeners = new HashMap<String, HandlerListener>();
     /**
      * 区分哪一下载，主要用于多个下载区分哪一个
      */
@@ -248,10 +250,24 @@ public class DownLoadFileBean {
     /**
      * 下载通知消息.进度/成功/失败
      *
-     * @param HandlerListener
+     * @param handlerListener
      */
-    public void setHandlerListenerr(HandlerListener handlerListener) {
-        this.handlerListener = handlerListener;
+    public void addHandlerListener(HandlerListener handlerListener) {
+        if (handlerListener != null) {
+            String key = handlerListener.toString();
+            if (HandlerListeners != null && !HandlerListeners.containsKey(key)) {
+                HandlerListeners.put(key, handlerListener);
+            }
+        }
+    }
+
+    public void removeHandlerListener(HandlerListener handlerListener) {
+        if (handlerListener != null) {
+            String key = handlerListener.toString();
+            if (HandlerListeners != null && HandlerListeners.containsKey(key)) {
+                HandlerListeners.remove(key);
+            }
+        }
     }
 
     /**
@@ -259,8 +275,8 @@ public class DownLoadFileBean {
      *
      * @return
      */
-    public HandlerListener getHandlerListener() {
-        return handlerListener;
+    public Map<String, HandlerListener> getHandlerListener() {
+        return HandlerListeners;
     }
 
     /**

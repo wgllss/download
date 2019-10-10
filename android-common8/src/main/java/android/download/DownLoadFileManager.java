@@ -89,6 +89,12 @@ public class DownLoadFileManager {
                     }
                 });
             } else {
+                if (map != null && map.get(Integer.toString(which)) != null) {
+                    DownLoadFile mDownLoadFile = map.get(Integer.toString(which)).get();
+                    if (mDownLoadFile != null) {
+                        mDownLoadFile.addHandlerListener(handlerListener);
+                    }
+                }
                 ShowLog.i(TAG, "该" + which + "号下载 已经在下载");
             }
         } catch (Exception e) {
@@ -138,6 +144,22 @@ public class DownLoadFileManager {
                     }
                 } catch (Exception e) {
                     ShowLog.e(TAG, "pauseDownload-->" + CrashHandler.crashToString(e));
+                }
+            }
+        });
+    }
+
+    public void removeHandlerListener(final int which, final HandlerListener handlerListener) {
+        ThreadPoolTool.getInstance().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (map != null && map.get(Integer.toString(which)) != null) {
+                        DownLoadFile mDownLoadFile = map.get(Integer.toString(which)).get();
+                        mDownLoadFile.removeHandlerListener(handlerListener);
+                    }
+                } catch (Exception e) {
+                    ShowLog.e(TAG, "removeHandlerListener-->" + e);
                 }
             }
         });
