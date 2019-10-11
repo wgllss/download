@@ -126,7 +126,11 @@ public class SubDownLoadFileThead extends Thread {
                         }
                         int nPercent = (int) (tempSize * 100 / downLoadFileBean.getFileLength());
                         // int nPercent = (int) (startPos * 100 / downLoadFileBean.getFileLength());
-                        if (downLoadFileBean.getWeakReference() != null && downLoadFileBean.getWeakReference().get() != null && !downLoadFileBean.getWeakReference().get().isFinishing()) {
+                        if (downLoadFileBean.getWeakReference() != null && downLoadFileBean.getWeakReference().get() != null) {
+                            if (!downLoadFileBean.getWeakReference().get().isFinishing()) {
+                                CommonHandler.getInstatnce().handerMessage(downLoadFileBean.getHandlerListener(), DownLoadFileBean.DOWLOAD_FLAG_ING, 0, downLoadFileBean.getWhich(), nPercent);
+                            }
+                        } else {
                             CommonHandler.getInstatnce().handerMessage(downLoadFileBean.getHandlerListener(), DownLoadFileBean.DOWLOAD_FLAG_ING, 0, downLoadFileBean.getWhich(), nPercent);
                         }
                     }
