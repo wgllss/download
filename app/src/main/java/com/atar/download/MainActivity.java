@@ -3,6 +3,7 @@ package com.atar.download;
 import android.Manifest;
 import android.activity.ActivityManager;
 import android.appconfig.AppConfigDownloadManager;
+import android.appconfig.AppConfigModel;
 import android.appconfig.ConfigUtils;
 import android.appconfig.moudle.ConfigJson;
 import android.appconfig.moudle.UpdateApkInfo;
@@ -21,6 +22,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.update.UpdateApkTools;
+import android.utils.GsonUtils;
 import android.utils.MDPassword;
 import android.utils.PackageUtil;
 import android.utils.ShowLog;
@@ -34,7 +36,7 @@ import com.atar.downloadapp.R;
 import java.io.File;
 
 
-public class MainActivity extends AppCompatActivity implements DownloadProgressButton.OnDownLoadClickListener, HandlerListener, NetWorkCallListener {
+public class MainActivity extends AppCompatActivity implements DownloadProgressButton.OnDownLoadClickListener, HandlerListener, NetWorkCallListener, View.OnClickListener {
 
     private String TAG = MainActivity.class.getSimpleName();
 
@@ -43,7 +45,9 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
     private EditText edt_ip;
     private EditText edt_thread_num, edt_thread_num2;
     private EditText edit_ip2;
-    private DownloadProgressButton btn_down, btn_down1;
+    private DownloadProgressButton btn_down;
+
+    public static String IP_KEY = "IP_KEY";
 
     //获取配置标识
     private final int what = 100023;
@@ -59,7 +63,8 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
         edt_thread_num2 = findViewById(R.id.edt_thread_num2);
         edit_ip2 = findViewById(R.id.edit_ip2);
         btn_down = findViewById(R.id.btn_down);
-        btn_down1 = findViewById(R.id.btn_down1);
+
+        findViewById(R.id.btn_save_ip).setOnClickListener(this);
 
         btn_down.setOnDownLoadClickListener(this);
         btn_down.setButtonRadius(0);
@@ -70,15 +75,7 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
         btn_down.setBackgroundSecondColor(getResources().getColor(R.color.color_ffffffff));
         btn_down.setCurrentText("下载");
 
-        btn_down1.setOnDownLoadClickListener(this);
-        btn_down1.setButtonRadius(0);
-        btn_down1.setEnablePause(true);
-        btn_down1.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        btn_down1.setTextColor(getResources().getColor(R.color.color_black));
-        btn_down1.setTextCoverColor(getResources().getColor(R.color.color_ffffffff));
-        btn_down1.setBackgroundSecondColor(getResources().getColor(R.color.color_ffffffff));
-        btn_down1.setCurrentText("下载");
-
+        edit_ip2.setText(AppConfigModel.getInstance().getString(IP_KEY, "10.208.24.208:8080"));
     }
 
     @Override
@@ -105,15 +102,30 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
                 }
                 DownLoadFileManager.getInstance().downLoad(this, this, 1, fileUrl, threadNum, true, UpdateApkTools.fileName, UpdateApkTools.strDownloadDir);
                 break;
-            case R.id.btn_down1:
-                fileUrl = edit_ip2.getText().toString();
+//            case R.id.btn_down1:
+//                fileUrl = edit_ip2.getText().toString();
+//                if (TextUtils.isEmpty(fileUrl)) {
+//                    CommonToast.show("下载地址为空");
+//                    return;
+//                }
+//                fileUrl = "http://" + fileUrl + "/assets/config/android_config_moudle.txt";
+//                AppConfigDownloadManager.getInstance().getServerJson(fileUrl, what, ErrorMsgEnum.NetWorkMsgWhithToast, this, this);
+//                return;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_save_ip:
+                String fileUrl = edit_ip2.getText().toString();
                 if (TextUtils.isEmpty(fileUrl)) {
                     CommonToast.show("下载地址为空");
                     return;
                 }
                 fileUrl = "http://" + fileUrl + "/assets/config/android_config_moudle.txt";
                 AppConfigDownloadManager.getInstance().getServerJson(fileUrl, what, ErrorMsgEnum.NetWorkMsgWhithToast, this, this);
-                return;
+                break;
         }
     }
 
@@ -123,9 +135,11 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
             case R.id.btn_down:
                 DownLoadFileManager.getInstance().pauseDownload(1);
                 break;
-            case R.id.btn_down1:
-                DownLoadFileManager.getInstance().pauseDownload(2);
+            case R.id.btn_save_ip:
                 break;
+//            case R.id.btn_down1:
+//                DownLoadFileManager.getInstance().pauseDownload(2);
+//                break;
         }
     }
 
@@ -155,10 +169,10 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
                         downloadFile = new File(UpdateApkTools.strDownloadDir + UpdateApkTools.fileName);
                         break;
                     case 2:
-                        btn_down1.setProgress(100);
-                        btn_down1.finish();
-                        btn_down1.setCurrentText("正在安装...");
-                        downloadFile = new File(UpdateApkTools.strDownloadDir + MDPassword.getPassword32(UpdateApkTools.fileName));
+//                        btn_down1.setProgress(100);
+//                        btn_down1.finish();
+//                        btn_down1.setCurrentText("正在安装...");
+//                        downloadFile = new File(UpdateApkTools.strDownloadDir + MDPassword.getPassword32(UpdateApkTools.fileName));
                         break;
                 }
                 if (downloadFile != null && downloadFile.exists()) {
@@ -184,8 +198,8 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
                         btn_down.setVisibility(View.VISIBLE);
                         break;
                     case 2:
-                        btn_down1.setProgress(progress);
-                        btn_down1.setVisibility(View.VISIBLE);
+//                        btn_down1.setProgress(progress);
+//                        btn_down1.setVisibility(View.VISIBLE);
                         break;
                 }
                 break;
@@ -237,7 +251,13 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
                 if (msg != null && msg.obj != null) {
                     ConfigJson configJson = (ConfigJson) msg.obj;
                     if (configJson != null) {
-                        ConfigUtils.getInstance().setConfigResult(this, configJson, this);
+                        if (configJson.getDownloadApkList() != null && configJson.getDownloadApkList().size() > 0) {
+                            AppConfigModel.getInstance().putString(DownLoadListActivity.KEY, GsonUtils.beanToJson(configJson.getDownloadApkList()), true);
+                        }
+                        String ip = edit_ip2.getText().toString();
+                        AppConfigModel.getInstance().putString(IP_KEY, ip, true);
+                        DownLoadListActivity.startDownLoadListActivity(this);
+//                        ConfigUtils.getInstance().setConfigResult(this, configJson, this);
                     }
                 }
                 break;

@@ -46,7 +46,8 @@
         android:paddingLeft="20dp"
         android:text="1"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="18dp" />
+        android:textSize="18dp"
+        android:visibility="invisible" />
 
     <EditText
         android:id="@+id/edit_ip2"
@@ -59,10 +60,18 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="18dp" />
 
-    <com.atar.download.widgets.DownloadProgressButton
-        android:id="@+id/btn_down1"
+    <Button
+        android:id="@+id/btn_save_ip"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginTop="20dp"
+        android:text="保存"
         android:textSize="18dp" />
+
+    <!--<com.atar.download.widgets.DownloadProgressButton-->
+    <!--android:id="@+id/btn_down1"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="60dp"-->
+    <!--android:layout_marginTop="20dp"-->
+    <!--android:textSize="18dp" />-->
 </LinearLayout>

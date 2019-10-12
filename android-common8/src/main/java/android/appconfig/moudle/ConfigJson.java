@@ -1,5 +1,7 @@
 package android.appconfig.moudle;
 
+import java.util.List;
+
 /**
  * @author：atar
  * @date: 2019/9/27
@@ -13,6 +15,8 @@ public class ConfigJson {
 
     //更改以下配置数据 需要 升级 selfVersion版本
     private UpdateApkInfo updateApkInfo;//升级apk信息
+
+    private List<DownloadApkBean> downloadApkList;
 
     public String getSelfVersion() {
         return selfVersion;
@@ -28,5 +32,9 @@ public class ConfigJson {
 
     public String getTestSn() {
         return testSn;
+    }
+
+    public List<DownloadApkBean> getDownloadApkList() {
+        return downloadApkList;
     }
 }
