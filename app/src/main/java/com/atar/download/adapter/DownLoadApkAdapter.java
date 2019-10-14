@@ -112,8 +112,13 @@ public class DownLoadApkAdapter extends CommonAdapter<DownloadApkBean> {
 
                 @Override
                 public void clickDownload(View v) {
-                    String ip = AppConfigModel.getInstance().getString(MainActivity.IP_KEY, "10.208.24.208:8080");
-                    DownLoadFileManager.getInstance().downLoad((Activity) parent.getContext(), mViewHolder.mHandlerListener, position, "http://" + ip + info.getUrl(), MDPassword.getPassword32(info.getDownloadFileName()),
+                    String fileUrl = AppConfigModel.getInstance().getString(MainActivity.IP_KEY, "10.208.24.208:8080");
+                    if (!info.getUrl().contains("http://")) {
+                        fileUrl = "http://" + fileUrl + info.getUrl();
+                    } else {
+                        fileUrl = info.getUrl();
+                    }
+                    DownLoadFileManager.getInstance().downLoad((Activity) parent.getContext(), mViewHolder.mHandlerListener, position, fileUrl, MDPassword.getPassword32(info.getDownloadFileName()),
                             strDownloadDir);
                 }
             });

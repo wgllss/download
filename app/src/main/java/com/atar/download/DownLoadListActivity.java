@@ -7,9 +7,12 @@ import android.appconfig.moudle.DownloadApkBean;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.download.DownLoadFileManager;
+import android.interfaces.HandlerListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -29,7 +32,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DownLoadListActivity extends AppCompatActivity {
+public class DownLoadListActivity extends AppCompatActivity implements HandlerListener {
 
     public static final String KEY = "downloadapklist";
     private final int INSTALL_PACKAGES_REQUESTCODE = 12334;
@@ -49,6 +52,9 @@ public class DownLoadListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_down_load_list);
         listview = findViewById(R.id.listview);
+        SD_PATH = SD_PATH + MDPassword.getPassword32(getPackageName()) + "/";
+        downLoadApkAdapter.setStrDownloadDir(SD_PATH);
+
 
         String json = AppConfigModel.getInstance().getString(KEY, "");
         if (!TextUtils.isEmpty(json)) {
@@ -56,11 +62,34 @@ public class DownLoadListActivity extends AppCompatActivity {
             }.getType());
             if (list != null && list.size() > 0) {
                 this.list.addAll(list);
+                for (int i = 0; i < list.size(); i++) {
+                    String fileUrl = AppConfigModel.getInstance().getString(MainActivity.IP_KEY, "10.208.24.208:8080");
+                    if (!list.get(i).getUrl().contains("http://")) {
+                        fileUrl = "http://" + fileUrl + list.get(i).getUrl();
+                    } else {
+                        fileUrl = list.get(i).getUrl();
+                    }
+                    DownLoadFileManager.getInstance().initTempFilePercent(i, this, fileUrl, MDPassword.getPassword32(list.get(i).getDownloadFileName()), SD_PATH);
+                }
             }
         }
-        SD_PATH = SD_PATH + MDPassword.getPassword32(getPackageName()) + "/";
-        downLoadApkAdapter.setStrDownloadDir(SD_PATH);
         listview.setAdapter(downLoadApkAdapter);
+    }
+
+    @Override
+    public void onHandlerData(Message msg) {
+        switch (msg.what) {
+            case android.download.DownLoadFileBean.DOWLOAD_FLAG_SUCCESS:
+                list.get(msg.arg2).setProgress(100);
+                break;
+            case android.download.DownLoadFileBean.DOWLOAD_FLAG_ING:
+                int progress = (Integer) msg.obj;
+                list.get(msg.arg2).setProgress(progress);
+                break;
+        }
+        if (downLoadApkAdapter != null) {
+            downLoadApkAdapter.notifyDataSetChanged();
+        }
     }
 
     public void install(File downloadFile) {
