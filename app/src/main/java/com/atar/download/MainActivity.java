@@ -4,7 +4,6 @@ import android.Manifest;
 import android.activity.ActivityManager;
 import android.appconfig.AppConfigDownloadManager;
 import android.appconfig.AppConfigModel;
-import android.appconfig.ConfigUtils;
 import android.appconfig.moudle.ConfigJson;
 import android.appconfig.moudle.UpdateApkInfo;
 import android.content.pm.PackageManager;
