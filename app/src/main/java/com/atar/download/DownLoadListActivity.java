@@ -20,6 +20,7 @@ import android.text.TextUtils;
 import android.utils.MDPassword;
 import android.utils.PackageUtil;
 import android.widget.CommonToast;
+import android.widget.GridView;
 import android.widget.ListView;
 
 import com.atar.download.adapter.DownLoadApkAdapter;
@@ -37,7 +38,7 @@ public class DownLoadListActivity extends AppCompatActivity implements HandlerLi
     public static final String KEY = "downloadapklist";
     private final int INSTALL_PACKAGES_REQUESTCODE = 12334;
 
-    private ListView listview;
+    private GridView listview;
 
     private List<DownloadApkBean> list = new ArrayList<DownloadApkBean>();
     private DownLoadApkAdapter downLoadApkAdapter = new DownLoadApkAdapter(list);
