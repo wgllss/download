@@ -11,6 +11,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -109,13 +110,15 @@ public class PackageUtil {
                     //兼容8.0
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         boolean hasInstallPermission = context.getPackageManager().canRequestPackageInstalls();
+                        Log.e("PackageUtil", "hasInstallPermission-->" + hasInstallPermission);
                         if (!hasInstallPermission) {
                             //注意这个是8.0新API
                             intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            context.startActivity(intent);
+                            context.startActivityForResult(intent, requestCode);
                             return;
                         }
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     }
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 } catch (Exception e) {

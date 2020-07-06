@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -37,6 +38,7 @@ public class DownLoadListActivity extends AppCompatActivity implements HandlerLi
 
     public static final String KEY = "downloadapklist";
     private final int INSTALL_PACKAGES_REQUESTCODE = 12334;
+    private final int GET_UNKNOWN_APP_SOURCES = 12338;
 
     private GridView listview;
 
@@ -93,7 +95,11 @@ public class DownLoadListActivity extends AppCompatActivity implements HandlerLi
         }
     }
 
+    File downloadFile;
+
     public void install(File downloadFile) {
+        this.downloadFile = null;
+        this.downloadFile = downloadFile;
         if (downloadFile != null && downloadFile.exists()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 boolean b = getPackageManager().canRequestPackageInstalls();
@@ -114,7 +120,24 @@ public class DownLoadListActivity extends AppCompatActivity implements HandlerLi
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults != null && grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                boolean b = getPackageManager().canRequestPackageInstalls();
+                if (!b) {
+                    //将用户引导至安装未知应用界面。
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+                    startActivityForResult(intent, GET_UNKNOWN_APP_SOURCES);
+                    return;
+                }
+            }
             CommonToast.show("安装权限申请失败");
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GET_UNKNOWN_APP_SOURCES) {
+            installApk(downloadFile);
         }
     }
 

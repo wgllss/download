@@ -6,6 +6,7 @@ import android.appconfig.AppConfigDownloadManager;
 import android.appconfig.AppConfigModel;
 import android.appconfig.moudle.ConfigJson;
 import android.appconfig.moudle.UpdateApkInfo;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.download.DownLoadFileBean;
 import android.download.DownLoadFileManager;
@@ -14,9 +15,9 @@ import android.interfaces.NetWorkCallListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
+import android.provider.Settings;
 import android.reflection.ErrorMsgEnum;
 import android.reflection.NetWorkMsg;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -40,11 +41,13 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
     private String TAG = MainActivity.class.getSimpleName();
 
     private final int INSTALL_PACKAGES_REQUESTCODE = 12334;
-
+    private final int GET_UNKNOWN_APP_SOURCES = 12338;
+    
     private EditText edt_ip;
     private EditText edt_thread_num, edt_thread_num2;
     private EditText edit_ip2;
     private DownloadProgressButton btn_down;
+
 
     public static String IP_KEY = "IP_KEY";
 
@@ -229,11 +232,20 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults != null && grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             clickFinish(null);
         } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                boolean b = getPackageManager().canRequestPackageInstalls();
+                if (!b) {
+                    //将用户引导至安装未知应用界面。
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+                    startActivityForResult(intent, GET_UNKNOWN_APP_SOURCES);
+                    return;
+                }
+            }
             CommonToast.show("安装权限申请失败");
         }
     }
