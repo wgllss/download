@@ -1,5 +1,7 @@
 package android.appconfig.moudle;
 
+import android.text.TextUtils;
+
 /**
  * @author：atar
  * @date: 2019/10/12
@@ -25,7 +27,7 @@ public class DownloadApkBean {
     }
 
     public String getLoadName() {
-        return loadName;
+        return downloadName;
     }
 
     public String getUrl() {
@@ -33,6 +35,9 @@ public class DownloadApkBean {
     }
 
     public String getDownloadFileName() {
+        if (!TextUtils.isEmpty(url)) {
+            return url.hashCode() + "";
+        }
         return downloadFileName;
     }
 }

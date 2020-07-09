@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
 
     private final int INSTALL_PACKAGES_REQUESTCODE = 12334;
     private final int GET_UNKNOWN_APP_SOURCES = 12338;
-    
+
     private EditText edt_ip;
     private EditText edt_thread_num, edt_thread_num2;
     private EditText edit_ip2;
@@ -77,7 +77,12 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
         btn_down.setBackgroundSecondColor(getResources().getColor(R.color.color_ffffffff));
         btn_down.setCurrentText("下载");
 
-        edit_ip2.setText(AppConfigModel.getInstance().getString(IP_KEY, "10.208.24.208:8080"));
+
+        String fileUrl = AppConfigModel.getInstance().getString(MainActivity.IP_KEY, "10.208.24.208:8080");
+        setTitle(getResources().getString(R.string.app_name) + "               当前服务器IP：" + fileUrl);
+
+        edt_ip.setText(fileUrl);
+        edit_ip2.setText(fileUrl);
     }
 
     @Override

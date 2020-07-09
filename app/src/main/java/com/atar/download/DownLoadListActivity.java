@@ -77,6 +77,8 @@ public class DownLoadListActivity extends AppCompatActivity implements HandlerLi
             }
         }
         listview.setAdapter(downLoadApkAdapter);
+        String fileUrl = AppConfigModel.getInstance().getString(MainActivity.IP_KEY, "10.208.24.208:8080");
+        setTitle(getResources().getString(R.string.app_name) + "               当前服务器IP：" + fileUrl);
     }
 
     @Override
