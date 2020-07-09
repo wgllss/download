@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
         String fileUrl = AppConfigModel.getInstance().getString(MainActivity.IP_KEY, "10.208.24.208:8080");
         setTitle(getResources().getString(R.string.app_name) + "               当前服务器IP：" + fileUrl);
 
-        edt_ip.setText(fileUrl);
+        edt_ip.setText(fileUrl + "/assets/apk/debug/app-debug.apk");
         edit_ip2.setText(fileUrl);
     }
 
