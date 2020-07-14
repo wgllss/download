@@ -83,6 +83,10 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
 
         edt_ip.setText(fileUrl + "/assets/apk/debug/app-debug.apk");
         edit_ip2.setText(fileUrl);
+
+        //请求安装未知应用来源的权限
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission
+                .READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.REQUEST_INSTALL_PACKAGES}, INSTALL_PACKAGES_REQUESTCODE);
     }
 
     @Override
@@ -239,8 +243,8 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults != null && grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            clickFinish(null);
+        if (grantResults != null && grantResults.length == 3 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+//            clickFinish(null);
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 boolean b = getPackageManager().canRequestPackageInstalls();
