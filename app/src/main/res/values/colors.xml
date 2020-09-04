@@ -9,4 +9,7 @@
     <color name="color_FF767676">#767676</color>
     <color name="color_ffffffff">#ffffff</color>
     <color name="color_black">#000000</color>
+
+    <color name="transparent0">#00000000</color>
+    <color name="transparent2">#20000000</color>
 </resources>

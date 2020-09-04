@@ -14,12 +14,15 @@ import android.interfaces.HandlerListener;
 import android.interfaces.NetWorkCallListener;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.reflection.ErrorMsgEnum;
 import android.reflection.NetWorkMsg;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.update.UpdateApkTools;
 import android.utils.GsonUtils;
@@ -29,24 +32,30 @@ import android.utils.ShowLog;
 import android.view.View;
 import android.widget.CommonToast;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import com.atar.download.adapter.KeyAdapter;
+import com.atar.download.bean.ExKeyBoardBean;
 import com.atar.download.widgets.DownloadProgressButton;
 import com.atar.downloadapp.R;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements DownloadProgressButton.OnDownLoadClickListener, HandlerListener, NetWorkCallListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements DownloadProgressButton.OnDownLoadClickListener, HandlerListener, NetWorkCallListener, View.OnClickListener, KeyAdapter.OnKeyListener {
 
     private String TAG = MainActivity.class.getSimpleName();
 
     private final int INSTALL_PACKAGES_REQUESTCODE = 12334;
     private final int GET_UNKNOWN_APP_SOURCES = 12338;
 
-    private EditText edt_ip;
-    private EditText edt_thread_num, edt_thread_num2;
-    private EditText edit_ip2;
+    private TextView edt_ip;
+    private TextView edt_thread_num, edt_thread_num2;
+    private TextView edit_ip2;
     private DownloadProgressButton btn_down;
+    private RecyclerView recyclerview;
 
 
     public static String IP_KEY = "IP_KEY";
@@ -65,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
         edt_thread_num2 = findViewById(R.id.edt_thread_num2);
         edit_ip2 = findViewById(R.id.edit_ip2);
         btn_down = findViewById(R.id.btn_down);
+        recyclerview = findViewById(R.id.recyclerview);
 
         findViewById(R.id.btn_save_ip).setOnClickListener(this);
 
@@ -87,6 +97,94 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
         //请求安装未知应用来源的权限
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission
                 .READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.REQUEST_INSTALL_PACKAGES}, INSTALL_PACKAGES_REQUESTCODE);
+
+        initKeyBoard();
+    }
+
+    private int action_down = 0;
+
+    private void initKeyBoard() {
+        List<ExKeyBoardBean> list = new ArrayList<>();
+        list.add(new ExKeyBoardBean(0, "1"));
+        list.add(new ExKeyBoardBean(0, "2"));
+        list.add(new ExKeyBoardBean(0, "3"));
+        list.add(new ExKeyBoardBean(0, "4"));
+        list.add(new ExKeyBoardBean(0, "5"));
+        list.add(new ExKeyBoardBean(0, "6"));
+        list.add(new ExKeyBoardBean(0, "7"));
+        list.add(new ExKeyBoardBean(0, "8"));
+        list.add(new ExKeyBoardBean(0, "9"));
+        list.add(new ExKeyBoardBean(0, "."));
+        list.add(new ExKeyBoardBean(0, "0"));
+        list.add(new ExKeyBoardBean(0, ":"));
+        list.add(new ExKeyBoardBean(1, "删除"));
+        KeyAdapter keyAdapter = new KeyAdapter(list);
+        recyclerview.setLayoutManager(new GridLayoutManager(this, 3));
+        recyclerview.setAdapter(keyAdapter);
+        keyAdapter.setListener(this);
+    }
+
+    @Override
+    public void onKey(ExKeyBoardBean info) {
+        if (info != null && info.getType() == 0) {
+            String content = edit_ip2.getText().toString();
+            content = TextUtils.isEmpty(content) ? "" : content;
+            edit_ip2.setText(content + info.getName());
+        } else if (info != null && info.getType() == 1) {
+            String inputStr = edit_ip2.getText().toString().trim();
+            if (!TextUtils.isEmpty(inputStr) && inputStr.length() > 0) {
+                edit_ip2.setText(inputStr.substring(0, inputStr.length() - 1));
+            }
+        }
+    }
+
+    @Override
+    public void onLongClickKey(ExKeyBoardBean info) {
+        if (info != null && info.getType() == 1 && action_down == 1 && !isFinishing()) {
+            String inputStr = edit_ip2.getText().toString().trim();
+            if (!TextUtils.isEmpty(inputStr) && inputStr.length() > 0) {
+                edit_ip2.setText(inputStr.substring(0, inputStr.length() - 1));
+            }
+            Message message = new Message();
+            message.what = 1;
+            message.obj = info;
+            handler.sendMessageDelayed(message, 100);
+        }
+    }
+
+    @Override
+    public void onTouchDown(ExKeyBoardBean info) {
+        action_down = 1;
+    }
+
+    @Override
+    public void onTouchUp(ExKeyBoardBean info) {
+        action_down = 0;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
+    }
+
+    private TimeDownHandler handler = new TimeDownHandler();
+
+    public class TimeDownHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    if (action_down == 1 && !isFinishing()) {
+                        ExKeyBoardBean info = (ExKeyBoardBean) msg.obj;
+                        onLongClickKey(info);
+                    }
+                    break;
+            }
+        }
     }
 
     @Override
