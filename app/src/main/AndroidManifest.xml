@@ -59,6 +59,7 @@
         </provider>
 
         <activity android:name="com.atar.download.DownLoadListActivity"></activity>
+        <activity android:name="com.atar.download.DeviceActivity"></activity>
     </application>
 
 </manifest>

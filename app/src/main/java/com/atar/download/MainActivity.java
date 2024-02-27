@@ -25,6 +25,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.update.UpdateApkTools;
+import android.utils.DownLoadUtil;
 import android.utils.GsonUtils;
 import android.utils.MDPassword;
 import android.utils.PackageUtil;
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
         recyclerview = findViewById(R.id.recyclerview);
 
         findViewById(R.id.btn_save_ip).setOnClickListener(this);
+        findViewById(R.id.device_info).setOnClickListener(this);
 
         btn_down.setOnDownLoadClickListener(this);
         btn_down.setButtonRadius(0);
@@ -92,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
         setTitle(getResources().getString(R.string.app_name) + "               当前服务器IP：" + fileUrl);
 
         edt_ip.setText(fileUrl + "/assets/apk/debug/app-debug.apk");
+//        edt_ip.setText("https://gitee.com/raoyutian/PaddleSegSharp/raw/master/Demo/cppDemo/lib/PaddleSeg.dll");
         edit_ip2.setText(fileUrl);
 
         //请求安装未知应用来源的权限
@@ -210,6 +213,9 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
                     fileUrl = "http://" + fileUrl;
                 }
                 DownLoadFileManager.getInstance().downLoad(this, this, 1, fileUrl, threadNum, true, UpdateApkTools.fileName, UpdateApkTools.strDownloadDir);
+//                DownLoadFileManager.getInstance().downLoad(this, this, 1, fileUrl, threadNum, true, "classes3_dex.jar", UpdateApkTools.strDownloadDir);
+
+//                new DownLoadUtil().downFile(this, fileUrl, "classes3_dex", "21212", "classes3_dex", "classes3333_dex");
                 break;
 //            case R.id.btn_down1:
 //                fileUrl = edit_ip2.getText().toString();
@@ -234,6 +240,9 @@ public class MainActivity extends AppCompatActivity implements DownloadProgressB
                 }
                 fileUrl = "http://" + fileUrl + "/assets/config/android_config_moudle.txt";
                 AppConfigDownloadManager.getInstance().getServerJson(fileUrl, what, ErrorMsgEnum.NetWorkMsgWhithToast, this, this);
+                break;
+            case R.id.device_info:
+                startActivity(new Intent(this, DeviceActivity.class));
                 break;
         }
     }

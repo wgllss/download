@@ -2,7 +2,7 @@ ext {
     androidVersion = [
             androidGradlePlugin: "3.1.4",
             compileSdk         : 28,
-            buildTools         : "26.0.2",
+            buildTools         : "28.0.3",
             supportLib         : "26.1.0",
             archLib            : "1.1.1",
             minSdk             : 14,
@@ -24,10 +24,10 @@ ext {
 }
 
 
-def app_release = [:]
-app_release.storeFile = "../keystores/android.keystore"
-app_release.storePassword = "xuexiang"
-app_release.keyAlias = "android.keystore"
-app_release.keyPassword = "xuexiang"
-
-ext.app_release = app_release
+//def app_release = [:]
+//app_release.storeFile = "../keystores/android.keystore"
+//app_release.storePassword = "xuexiang"
+//app_release.keyAlias = "android.keystore"
+//app_release.keyPassword = "xuexiang"
+//
+//ext.app_release = app_release

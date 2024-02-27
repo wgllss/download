@@ -11,10 +11,50 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+//    signingConfigs {
+//        def password = "wgllss_download"
+//        def alias = "wgllss_download"
+//        def filePath = "./sign/download.jks"
+//
+//        debug {
+//            keyAlias alias
+//            keyPassword password
+//            storeFile file(filePath)
+//            storePassword(password)
+//            v1SigningEnabled true
+//            v2SigningEnabled true
+//        }
+//        release {
+//            keyAlias alias
+//            keyPassword password
+//            storeFile file(filePath)
+//            storePassword(password)
+//            v1SigningEnabled true
+//            v2SigningEnabled true
+//        }
+//    }
+
     buildTypes {
+        debug {
+            packagingOptions {
+                doNotStrip '**/*.so' // 避免so资源文件编译提示，可忽略
+            }
+            minifyEnabled false // 开启混淆
+            shrinkResources false // 启动资源压缩
+            zipAlignEnabled false // 开启zipalign优化
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.debug
+        }
+
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            packagingOptions {
+                doNotStrip '**/*.so' // 避免so资源文件编译提示，可忽略
+            }
+            minifyEnabled false // 开启混淆
+            shrinkResources false // 启动资源压缩
+            zipAlignEnabled false // 开启zipalign优化
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.release
         }
     }
 }

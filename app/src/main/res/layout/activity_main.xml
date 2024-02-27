@@ -75,4 +75,11 @@
         android:layout_gravity="right"
         android:layout_marginTop="10dp" />
 
+    <Button
+        android:id="@+id/device_info"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="10dp"
+        android:text="获取设备信息"
+        android:textSize="18dp" />
 </LinearLayout>
